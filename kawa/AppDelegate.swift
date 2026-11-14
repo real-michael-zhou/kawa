@@ -7,6 +7,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   var justLaunched: Bool = true
 
   func applicationDidFinishLaunching(_ aNotification: Notification) {
+    ShortcutManager.shared.bindAll()
+
     if PermanentStorage.launchedForTheFirstTime {
       PermanentStorage.launchedForTheFirstTime = false
     }

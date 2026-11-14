@@ -4,42 +4,29 @@ class ShortcutCellView: NSTableCellView {
   @IBOutlet weak var shortcutView: MASShortcutView!
 
   var inputSource: InputSource?
-  var shortcutKey: String?
+  private var recordingObservation: NSKeyValueObservation?
 
   func setInputSource(_ inputSource: InputSource) {
     self.inputSource = inputSource
-    shortcutKey = inputSource.id.replacingOccurrences(of: ".", with: "-")
-    shortcutView.associatedUserDefaultsKey = shortcutKey!
+    shortcutView.associatedUserDefaultsKey = ShortcutManager.defaultsKey(for: inputSource)
     shortcutView.shortcutValueChange = self.shortcutValueDidChange
-    MASShortcutBinder.shared().bindShortcut(withDefaultsKey: shortcutKey!, toAction: selectInput)
+    // Picks up input sources enabled after launch; no-op if already bound.
+    ShortcutManager.shared.bind(inputSource)
+
+    // Global hotkeys would swallow a combination that is already in use, so
+    // pause them while this view is recording.
+    recordingObservation = shortcutView.observe(\.isRecording, options: [.new]) { view, _ in
+      if view.isRecording {
+        ShortcutManager.shared.suspend()
+      } else {
+        ShortcutManager.shared.resume()
+      }
+    }
   }
 
   func shortcutValueDidChange(_ sender: MASShortcutView?) {
-    if sender?.shortcutValue == nil {
-      resetShortcutBinder()
+    if sender?.shortcutValue == nil, let inputSource = inputSource {
+      ShortcutManager.shared.rebind(inputSource)
     }
-  }
-
-  func resetShortcutBinder() {
-    MASShortcutBinder.shared().breakBinding(withDefaultsKey: shortcutKey!)
-    MASShortcutBinder.shared().bindShortcut(withDefaultsKey: shortcutKey!, toAction: selectInput)
-  }
-
-  func selectInput() {
-    guard let inputSource = inputSource else { return }
-
-    inputSource.select()
-
-    if PermanentStorage.showsNotification {
-      showNotification(inputSource.name, icon: inputSource.icon)
-    }
-  }
-
-  func showNotification(_ message: String, icon: NSImage?) {
-    NSUserNotificationCenter.default.removeAllDeliveredNotifications()
-    let notification = NSUserNotification()
-    notification.informativeText = message
-    notification.contentImage = icon
-    NSUserNotificationCenter.default.deliver(notification)
   }
 }
