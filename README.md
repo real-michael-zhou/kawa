@@ -17,11 +17,16 @@ Requires a Mac with Apple Silicon and macOS 12.0 or later.
 1. Download `Kawa-<version>.dmg` from
    [Releases](https://github.com/real-michael-zhou/kawa/releases).
 2. Open the dmg and drag `Kawa.app` to `Applications`.
-3. Kawa is not signed with an Apple Developer ID, so macOS blocks it on the
-   first launch. Either:
-   - open Kawa once, then go to **System Settings › Privacy & Security** and
-     click **Open Anyway**, or
-   - run `xattr -dr com.apple.quarantine /Applications/Kawa.app` in Terminal.
+3. Kawa is not signed with an Apple Developer ID, so on the first launch
+   macOS says *"Apple could not verify “Kawa” is free of malware…"*. Do not
+   click **Move to Trash**. Click **Done**, then run this in Terminal:
+
+   ```bash
+   $ xattr -dr com.apple.quarantine /Applications/Kawa.app
+   ```
+
+   and open Kawa again. Alternatively, go to **System Settings › Privacy &
+   Security** and click **Open Anyway** next to the message about Kawa.
 
 ### Build from source
 
