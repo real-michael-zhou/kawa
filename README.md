@@ -33,23 +33,21 @@ sources like [CJKV](https://en.wikipedia.org/wiki/CJK_characters).
 
 ## Development
 
-We use [Carthage](https://github.com/Carthage/Carthage) as a dependency manager.
-You can find the latest releases of Carthage [here](https://github.com/Carthage/Carthage/releases),
-or just install it with [Homebrew](http://brew.sh).
+This fork targets Apple Silicon (arm64) and macOS 12.0 or later. Carthage is
+not required: the dependency (MASShortcut, pinned in `Cartfile.resolved`) is
+built directly with `xcodebuild`.
 
 ```bash
-$ brew update
-$ brew install carthage
+$ git clone git@github.com:real-michael-zhou/kawa.git
+$ cd kawa
+$ ./scripts/build-deps.sh
 ```
 
-To clone the Git repository of Kawa and install dependencies:
+Then open `kawa.xcodeproj` with Xcode, or build from the command line:
 
 ```bash
-$ git clone git@github.com:utatti/kawa.git
-$ carthage bootstrap
+$ xcodebuild -project kawa.xcodeproj -scheme kawa -configuration Release build
 ```
-
-After dependency installation, open the project with Xcode.
 
 ## License
 
