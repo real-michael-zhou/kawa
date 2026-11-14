@@ -1,6 +1,6 @@
 ![logo](resource/png/logo.png)
 
-# Kawa [![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://raw.githubusercontent.com/utatti/kawa/master/LICENSE) [![GitHub release](https://img.shields.io/github/release/utatti/kawa.svg)](https://github.com/utatti/kawa/releases)
+# Kawa [![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://raw.githubusercontent.com/utatti/kawa/master/LICENSE)
 
 A macOS input source switcher with user-defined shortcuts.
 
@@ -10,18 +10,35 @@ A macOS input source switcher with user-defined shortcuts.
 
 ## Install
 
-### Using [Homebrew](https://brew.sh/)
+Requires a Mac with Apple Silicon and macOS 12.0 or later.
 
-```shell
-brew update
-brew install --cask kawa
+### Download
+
+1. Download `Kawa-<version>.dmg` from
+   [Releases](https://github.com/real-michael-zhou/kawa/releases).
+2. Open the dmg and drag `Kawa.app` to `Applications`.
+3. Kawa is not signed with an Apple Developer ID, so macOS blocks it on the
+   first launch. Either:
+   - open Kawa once, then go to **System Settings › Privacy & Security** and
+     click **Open Anyway**, or
+   - run `xattr -dr com.apple.quarantine /Applications/Kawa.app` in Terminal.
+
+### Build from source
+
+Requires Xcode.
+
+```bash
+$ git clone git@github.com:real-michael-zhou/kawa.git
+$ cd kawa
+$ ./scripts/package.sh
 ```
 
-### Manually
+This builds `build/Kawa-<version>.dmg`. Open it and drag `Kawa.app` to
+`Applications`. An app built on your own Mac is not quarantined, so it opens
+without the Gatekeeper step above.
 
-The prebuilt binaries can be found in [Releases](https://github.com/utatti/kawa/releases).
-
-Unzip `Kawa.zip` and move `Kawa.app` to `Applications`.
+To launch Kawa automatically, enable **Launch Kawa at login** in its
+preferences.
 
 ## Caveats
 
@@ -33,20 +50,23 @@ sources like [CJKV](https://en.wikipedia.org/wiki/CJK_characters).
 
 ## Development
 
-This fork targets Apple Silicon (arm64) and macOS 12.0 or later. Carthage is
-not required: the dependency (MASShortcut, pinned in `Cartfile.resolved`) is
-built directly with `xcodebuild`.
+Carthage is not required: the dependency (MASShortcut, pinned in
+`Cartfile.resolved`) is built directly with `xcodebuild`.
 
 ```bash
-$ git clone git@github.com:real-michael-zhou/kawa.git
-$ cd kawa
 $ ./scripts/build-deps.sh
 ```
 
-Then open `kawa.xcodeproj` with Xcode, or build from the command line:
+Then open `kawa.xcodeproj` with Xcode.
+
+### Releasing
+
+Bump `CFBundleShortVersionString` in `kawa/Info.plist`, commit, then push a
+matching tag. GitHub Actions builds the dmg and publishes the release.
 
 ```bash
-$ xcodebuild -project kawa.xcodeproj -scheme kawa -configuration Release build
+$ git tag v1.2.0
+$ git push origin v1.2.0
 ```
 
 ## License
